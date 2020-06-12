@@ -4,7 +4,6 @@ import { CanActivate, CanLoad, Route, UrlSegment, ActivatedRouteSnapshot, Router
 import { Observable } from 'rxjs';
 
 import { map, take, tap } from 'rxjs/operators';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -13,8 +12,6 @@ export class AuthGuard implements CanActivate, CanLoad {
     private authService: AuthService,
     private router: Router
   ) {}
-
-
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -33,7 +30,12 @@ export class AuthGuard implements CanActivate, CanLoad {
     segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean {
     return this.authService.afUser$.pipe(
       map(user => !!user),
-      take(1)
+      take(1),
+      tap((isLoggedin) => {
+        if (!isLoggedin) {
+          this.router.navigateByUrl('/welcome');
+        }
+      })
     );
   }
 }
